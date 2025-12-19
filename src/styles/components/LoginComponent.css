@@ -1,0 +1,40 @@
+.login-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.username-field, .password-field{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.password-field{
+    position: relative;
+}
+
+.error{
+    position: absolute;
+    color: red;
+    font-size: 0.875rem;
+    margin: 0;
+    transform: translateY(100%);
+    top: 70%;    
+}
+.error::before{
+    content: "⚠ ";
+}

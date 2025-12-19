@@ -1,0 +1,37 @@
+h2{
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+input{
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button{
+    padding: 0.75rem 1.5rem;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+label{
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+input:focus{
+    border-color: #007BFF;
+    outline: none;
+}
+
+button:hover{
+    background-color: #0056b3;
+}
