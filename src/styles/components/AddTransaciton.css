@@ -1,0 +1,156 @@
+/* O Fundo Escuro (Overlay) que cobre a tela inteira */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Escurece o fundo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Garante que fique acima de tudo */
+    backdrop-filter: blur(3px); /* Efeito "vidro fosco" no fundo */
+}
+
+/* A Caixinha Branca (O Modal em si) */
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px; /* Não deixa ficar gigante no PC */
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    
+    /* Animação suave subindo */
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Cabeçalho com Título e Botão Fechar */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #95a5a6;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #e74c3c; /* Fica vermelho ao passar o mouse */
+}
+
+/* --- A Mágica dos Botões de Entrada/Saída --- */
+.transaction-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 50% para cada botão */
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.transaction-type-selector button {
+    padding: 12px;
+    border: 2px solid #ecf0f1;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #bdc3c7; /* Cinza claro quando inativo */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Estilo quando ENTRADA está selecionado */
+.transaction-type-selector button.active.credit {
+    background-color: rgba(39, 174, 96, 0.1); /* Verde bem clarinho no fundo */
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+/* Estilo quando SAÍDA está selecionado */
+.transaction-type-selector button.active.debit {
+    background-color: rgba(231, 76, 60, 0.1); /* Vermelho bem clarinho no fundo */
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+/* Hover simples nos botões inativos */
+.transaction-type-selector button:hover:not(.active) {
+    border-color: #bdc3c7;
+    color: #95a5a6;
+}
+
+/* Inputs do Formulário */
+form input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 1rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none; /* Remove a borda azul padrão do navegador */
+    transition: border-color 0.2s;
+}
+
+form input:focus {
+    border-color: #3498db; /* Fica azul ao digitar */
+}
+
+/* Botão Verde de Confirmar */
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #219150;
+}
+
+.form-add-transaction.active.credit{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: rgba(0, 61, 15, 0.09);
+    padding: 1rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #27ae60;
+}
+.form-add-transaction.active.debit{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: rgba(15, 0, 0, 0.09);
+    padding: 1rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #e74c3c;
+    
+}

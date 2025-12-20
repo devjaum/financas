@@ -7,34 +7,31 @@
 }
 
 body {
-  background-color: #f4f7f6; /* Fundo cinza bem claro para destacar os cards */
+  background-color: #f4f7f6;
   color: #333;
 }
 
-/* Container Principal */
 main {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1rem;
   display: grid;
-  grid-template-columns: 1fr; /* Mobile first: 1 coluna */
+  grid-template-columns: 1fr; 
   gap: 1.5rem;
 }
 
-/* Estilo dos Cards (Sections) */
 section {
   background: #ffffff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Sombra suave */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
 }
 
 section:hover {
-  transform: translateY(-2px); /* Leve elevação ao passar o mouse */
+  transform: translateY(-2px);
 }
 
-/* Títulos das Seções */
 section h3 {
   font-size: 1.2rem;
   color: #555;
@@ -43,7 +40,6 @@ section h3 {
   padding-bottom: 0.5rem;
 }
 
-/* Input de Saldo (Estilizado para parecer apenas texto) */
 input[readonly] {
   width: 100%;
   border: none;
@@ -55,7 +51,6 @@ input[readonly] {
   cursor: default;
 }
 
-/* Lista de Transações */
 ul {
   list-style: none;
 }
@@ -77,9 +72,8 @@ ul li span {
   font-weight: 600;
 }
 
-/* Classes dinâmicas baseadas no type (credit/debit) */
 li.credit span {
-  color: #27ae60; /* Verde */
+  color: #27ae60; 
 }
 
 li.credit::before {
@@ -89,7 +83,7 @@ li.credit::before {
 }
 
 li.debit span {
-  color: #c0392b; /* Vermelho */
+  color: #c0392b;
 }
 
 li.debit::before {
@@ -98,8 +92,6 @@ li.debit::before {
   margin-right: 8px;
 }
 
-/* Container do Gráfico */
-/* Nota: Você precisará remover o style inline do seu TSX para isso funcionar 100% ou usar !important */
 .chart-container {
   position: relative;
   height: 300px;
@@ -109,7 +101,6 @@ li.debit::before {
   justify-content: center;
 }
 
-/* Relatório Anual */
 section div p {
   margin-bottom: 0.5rem;
   line-height: 1.5;
@@ -123,38 +114,32 @@ section div p:last-child {
   text-align: center;
 }
 
-/* Estiliza a mensagem final baseada no contexto (básico via CSS) */
-/* Aqui assumimos que o último P é a mensagem de aviso ou parabéns */
 section div p:last-child {
     background-color: #e8f6f3;
     color: #0e6251;
 }
 
-/* Layout para Telas Maiores (Desktop) */
 @media (min-width: 768px) {
   main {
-    grid-template-columns: repeat(2, 1fr); /* 2 Colunas */
+    grid-template-columns: repeat(2, 1fr);
     grid-template-areas: 
       "saldo saldo"
       "transacoes grafico"
       "relatorio relatorio";
   }
 
-  /* Assignando áreas do Grid (opcional, depende da ordem das sections) */
   section:nth-child(1) { grid-area: saldo; }
   section:nth-child(2) { grid-area: transacoes; }
   section:nth-child(3) { grid-area: grafico; }
   section:nth-child(4) { grid-area: relatorio; }
 }
 
-/* Container do Relatório */
 .relatorio-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-/* Grid dos Cards de Valores */
 .resumo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -181,7 +166,6 @@ section div p:last-child {
     color: #2c3e50;
 }
 
-/* Barra de Progresso "Estilo Gamer/Health Bar" */
 .progress-area p {
     margin-bottom: 5px;
     font-size: 0.9rem;
@@ -193,19 +177,18 @@ section div p:last-child {
     height: 12px;
     background-color: #e0e0e0;
     border-radius: 10px;
-    overflow: hidden; /* Garante que a barra interna não vase as bordas redondas */
+    overflow: hidden;
 }
 
 .progress-bar-fill {
     height: 100%;
     border-radius: 10px;
-    transition: width 0.5s ease-in-out; /* Animação suave ao carregar */
+    transition: width 0.5s ease-in-out;
 }
 
-/* Mensagem de Feedback */
 .mensagem-final {
     padding: 10px;
-    border-left: 4px solid; /* Borda grossa colorida na esquerda */
+    border-left: 4px solid;
     background-color: #fff;
     font-weight: 600;
     font-size: 0.95rem;
@@ -213,9 +196,40 @@ section div p:last-child {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Ajuste para mobile */
 @media (max-width: 600px) {
     .resumo-grid {
-        grid-template-columns: 1fr; /* Um card embaixo do outro no celular */
+        grid-template-columns: 1fr;
     }
+}
+
+.trans-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botão de Deletar */
+.btn-delete {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    opacity: 0.6;
+}
+
+.btn-delete:hover {
+    opacity: 1;
+    background-color: #ffebee; 
+    transform: scale(1.1);
+}
+
+.trans-desc {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 10px;
 }
