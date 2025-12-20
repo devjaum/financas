@@ -35,11 +35,11 @@ section h3 {
 }
 
 .header-section {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .header-top-row {
@@ -65,32 +65,32 @@ section h3 {
 }
 
 @media (min-width: 600px) {
-    .header-section {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
+  .header-section {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+  }
 }
 
 .filters {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .filters select {
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background-color: var(--bg-input);
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
 .filters select:focus {
-    border-color: var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
 input[readonly] {
@@ -125,79 +125,80 @@ ul.transaction-list li:last-child {
 }
 
 .trans-desc {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
 }
 
 .trans-cat {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
-    padding: 2px 8px;
-    border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
 .trans-right span {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 li.credit .trans-right span { color: var(--success); }
 li.debit .trans-right span { color: var(--danger); }
 
 .btn-icon {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 6px;
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 6px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
 }
 
 .btn-icon:hover {
-    color: var(--accent-primary);
-    transform: scale(1.1);
+  color: var(--accent-primary);
+  transform: scale(1.1);
 }
 
 .btn-icon.delete:hover {
-    color: var(--danger);
+  color: var(--danger);
 }
 
 .btn-add {
-    background-color: var(--accent-primary);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .btn-add:hover {
-    background-color: var(--accent-hover);
+  background-color: var(--accent-hover);
 }
 
 .card-info {
-    background: var(--bg-card);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-top: 5px;
 }
 
 .card-info span {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 5px;
-    display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .card-info strong {
-    font-size: 1.2rem;
-    font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .chart-container {
@@ -207,24 +208,101 @@ li.debit .trans-right span { color: var(--danger); }
 }
 
 .empty-state {
-    text-align: center;
-    color: var(--text-secondary);
-    padding: 2rem;
-    font-style: italic;
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem;
+  font-style: italic;
 }
 
 .chart-section{
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .transactions-section{
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.annual-report-section{
+  grid-column: 1 / span 2;
+
+}
+
+.annual-report-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.report-header h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.btn-small-outline {
+  background: transparent;
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-small-outline:hover {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.progress-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 14px;
+  background-color: var(--bg-input); 
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.8s ease-in-out;
+}
+
+.mensagem-final {
+  padding: 12px;
+  border-left: 4px solid;
+  background-color: var(--bg-input);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
 }
 
 @media (min-width: 900px) {
@@ -242,5 +320,5 @@ li.debit .trans-right span { color: var(--danger); }
 }
 
 @media (max-width: 600px) {
-    .resumo-grid { grid-template-columns: 1fr; }
+  .resumo-grid { grid-template-columns: 1fr; }
 }
