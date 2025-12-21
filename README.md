@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+#  DevJaum Finanças
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Um dashboard de controle financeiro pessoal simples, performático e totalmente responsivo.
 
-## Available Scripts
+![Badge Status](https://img.shields.io/badge/STATUS-CONCLUÍDO-green)
+![React](https://img.shields.io/badge/React-18-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
-In the project directory, you can run:
+## Demonstração
 
-### `npm start`
+<div style="display: flex; gap: 16px;">
+  <img width="450"  alt="Inicio" src="https://github.com/user-attachments/assets/4f56cec9-3ee0-4ecd-8756-475f1406f791" />
+  <img width="450" alt="Add/Remover" src="https://github.com/user-attachments/assets/121f115b-3c44-496c-9e49-cbda0f284b64" />
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+</div>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+##  Sobre o Projeto
 
-### `npm test`
+Este projeto foi desenvolvido com o objetivo de criar uma ferramenta prática para gestão financeira pessoal, focando na experiência do usuário e na persistência de dados local (**LocalStorage**), sem necessidade de backend.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+O foco principal do desenvolvimento foi a aplicação de **Clean Code**, arquitetura de componentes e uso avançado de **React Hooks** e **Context API**.
 
-### `npm run build`
+##  Funcionalidades
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Dashboard Interativo**: Visão geral de saldo, entradas e saídas.
+- **Tema Claro/Escuro**: Alternância de temas via Context API e CSS Variables.
+- **Gráficos Dinâmicos**: Visualização de gastos mensais com Chart.js.
+- **Gestão de Transações**:
+  - Adicionar, Editar e Excluir movimentações.
+  - Filtros por **Mês** e **Tipo** (Receita/Despesa).
+  - Categorização automática.
+- **Relatório Anual**: Projeção de saúde financeira baseada na média real de gastos e ganhos.
+- **Persistência**: Todos os dados são salvos automaticamente no navegador do usuário.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+##  Tecnologias Utilizadas
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **React.js**: Biblioteca principal de UI.
+- **TypeScript**: Para tipagem estática e segurança do código.
+- **Chart.js**: Para renderização de gráficos.
+- **Context API**: Gerenciamento de estado global (Temas).
+- **CSS Modules/Variables**: Estilização nativa e performática (sem bibliotecas pesadas).
+- **LocalStorage**: "Banco de dados" no front-end.
 
-### `npm run eject`
+##  Como Rodar o Projeto
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Pré-requisitos: Node.js instalado.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+# 1. Clone o repositório
+git clone [https://github.com/devjaum/financas.git](https://github.com/devjaum/financas.git)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# 2. Entre na pasta do projeto
+cd devjaum-financas
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# 3. Instale as dependências
+npm install
 
-## Learn More
+# 4. Rode o servidor de desenvolvimento
+npm start
+```
+> O projeto abrirá automaticamente em http://localhost:3000.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+##  Aprendizados e Destaques Técnicos
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Principais desafios técnicos e decisões de arquitetura que adotei:
 
-### Code Splitting
+* **Arquitetura:** Separação de regras de negócio (`src/utils/finance.ts`) da camada de visualização (Componentes), facilitando testes e manutenção.
+* **Custom Hooks & Context:** Implementação de um `ThemeProvider` para gerenciar o estado global de aparência da aplicação de forma limpa.
+* **Lógica Financeira:** Algoritmos para projeção anual baseados na média ponderada das transações reais, e não apenas em valores fixos.
+* **UX/UI:** Feedback visual imediato para o usuário (cores semânticas para erro/sucesso) e design responsivo.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+##  Estrutura de Pastas
+```text
+src/
+├── components/    # Componentes reutilizáveis (Dashboard, Modal, etc)
+├── contexts/      # Gerenciamento de estado global (ThemeContext)
+├── styles/        # Estilos CSS modularizados e globais
+├── utils/         # Funções puras e regras de negócio (Cálculos Financeiros)
+└── App.tsx        # Ponto de entrada da aplicação
+```
