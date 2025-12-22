@@ -11,8 +11,9 @@
 <div style="display: flex; gap: 16px;">
   <img width="450"  alt="Inicio" src="https://github.com/user-attachments/assets/4f56cec9-3ee0-4ecd-8756-475f1406f791" />
   <img width="450" alt="Add/Remover" src="https://github.com/user-attachments/assets/121f115b-3c44-496c-9e49-cbda0f284b64" />
-
 </div>
+
+> Acesse [Devjaum Financas](https://devjaum.github.io/financas/)
 
 ##  Sobre o Projeto
 
@@ -47,7 +48,7 @@ Pré-requisitos: Node.js instalado.
 
 ```bash
 # 1. Clone o repositório
-git clone [https://github.com/devjaum/financas.git](https://github.com/devjaum/financas.git)
+git clone https://github.com/devjaum/financas
 
 # 2. Entre na pasta do projeto
 cd devjaum-financas
