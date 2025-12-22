@@ -86,9 +86,11 @@ function Dashboard() {
     const handleEditSalary = () => {
         const newSalary = window.prompt("Digite seu salário mensal líquido (base):", config.salario.toString());
         if (newSalary && !isNaN(parseFloat(newSalary))) {
-            const newConfig = { ...config, salario: parseFloat(newSalary) };
-            setConfig(newConfig);
-            localStorage.setItem('finance_config', JSON.stringify(newConfig));
+            //Fazer o lançamento em todos os meses daquele ano
+            const updatedConfig = { ...config, salario: parseFloat(newSalary) };
+            setConfig(updatedConfig);
+            localStorage.setItem('finance_config', JSON.stringify(updatedConfig));
+            
         }
     };
 
