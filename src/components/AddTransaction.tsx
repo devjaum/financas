@@ -6,15 +6,31 @@ interface AddTransactionProps {
     onTransactionAdded: () => void;
     onClose: () => void;
     transactionToEdit?: Transaction | null;
+    initialYear?: number;
+    initialMonth?: number; 
 }
 
-function AddTransaction({ onTransactionAdded, onClose, transactionToEdit }: AddTransactionProps) {
+function AddTransaction({ 
+    onTransactionAdded, 
+    onClose, 
+    transactionToEdit, 
+    initialYear, 
+    initialMonth 
+}: AddTransactionProps) {
+    
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('Outros');
     const [type, setType] = useState<'credit' | 'debit'>('debit');
     
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(() => {
+        const now = new Date();
+        const y = initialYear || now.getFullYear();
+        const m = (initialMonth !== undefined) ? initialMonth + 1 : now.getMonth() + 1;
+        const d = now.getDate();
+        
+        return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    });
 
     useEffect(() => {
         if (transactionToEdit) {
@@ -25,8 +41,10 @@ function AddTransaction({ onTransactionAdded, onClose, transactionToEdit }: AddT
             
             if (transactionToEdit.date) {
                 const localDate = new Date(transactionToEdit.date);
-                const formattedDate = localDate.toLocaleDateString('en-CA');
-                setDate(formattedDate);
+                const y = localDate.getFullYear();
+                const m = String(localDate.getMonth() + 1).padStart(2, '0');
+                const d = String(localDate.getDate()).padStart(2, '0');
+                setDate(`${y}-${m}-${d}`);
             }
         }
     }, [transactionToEdit]);
@@ -38,8 +56,8 @@ function AddTransaction({ onTransactionAdded, onClose, transactionToEdit }: AddT
 
         const finalAmount = type === 'debit' ? -Math.abs(valorNumerico) : Math.abs(valorNumerico);
         
-        const [year, month, day] = date.split('-').map(Number);
-        const finalDateObj = new Date(year, month - 1, day); 
+        const [yInput, mInput, dInput] = date.split('-').map(Number);
+        const finalDateObj = new Date(yInput, mInput - 1, dInput, 12, 0, 0); 
         const finalDateISO = finalDateObj.toISOString();
 
         const savedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
@@ -57,7 +75,7 @@ function AddTransaction({ onTransactionAdded, onClose, transactionToEdit }: AddT
                 description,
                 amount: finalAmount,
                 type,
-                date: finalDateISO, 
+                date: finalDateISO,
                 category
             };
             updatedTransactions = [...savedTransactions, newTransaction];

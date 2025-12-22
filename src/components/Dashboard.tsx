@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import '../styles/components/Dashboard.css';
 import AddTransaction from './AddTransaction.tsx';
+import RecurringExpenses from './RecurringExpenses.tsx'; 
 import { Chart, registerables } from 'chart.js';
 import { useTheme } from '../contexts/ThemeContext.tsx';
 import { 
@@ -8,7 +9,9 @@ import {
     formatCurrency, 
     getMonthlyExpenses, 
     calculateAnnualMetrics, 
-    FinanceConfig 
+    processRecurringExpenses, 
+    FinanceConfig,
+    RecurringExpense 
 } from '../utils/finance.ts';
 
 Chart.register(...registerables);
@@ -19,25 +22,54 @@ function Dashboard() {
     const [config, setConfig] = useState<FinanceConfig>({ salario: 0, meta: 0 });
     
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
+    
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
     const chartRef = useRef<Chart | null>(null);
 
+    const currentYearNum = new Date().getFullYear();
+    const [filterYear, setFilterYear] = useState<string>(String(currentYearNum));
     const [filterMonth, setFilterMonth] = useState<string>(String(new Date().getMonth()));
     const [filterType, setFilterType] = useState<'all' | 'credit' | 'debit'>('all');
 
+    const availableYears = useMemo(() => {
+        const years = new Set([currentYearNum, currentYearNum + 1]); 
+        transactions.forEach(t => {
+            if (t.date) {
+                const y = new Date(t.date).getFullYear();
+                years.add(y);
+            }
+        });
+        return Array.from(years).sort((a, b) => a - b);
+    }, [transactions, currentYearNum]);
+
     const loadData = () => {
         const savedTransactions = localStorage.getItem('transactions');
-        const transactionsList = savedTransactions ? JSON.parse(savedTransactions) : [];
+        let transactionsList: Transaction[] = savedTransactions ? JSON.parse(savedTransactions) : [];
         
         const savedConfig = localStorage.getItem('finance_config');
-        if (savedConfig) {
-            setConfig(JSON.parse(savedConfig));
-        } else {
-            const defaultConfig = { salario: 2000, meta: 5000 };
-            localStorage.setItem('finance_config', JSON.stringify(defaultConfig));
-            setConfig(defaultConfig);
-        }
+        if (savedConfig) setConfig(JSON.parse(savedConfig));
         
+        const savedRecurring = localStorage.getItem('recurring_expenses');
+        if (savedRecurring) {
+            const recurringList: RecurringExpense[] = JSON.parse(savedRecurring);
+            const selectedMonthIndex = parseInt(filterMonth);
+            const selectedYearInt = parseInt(filterYear)
+            
+            const result = processRecurringExpenses(
+                transactionsList, 
+                recurringList, 
+                selectedMonthIndex,
+                selectedYearInt
+            );
+            
+            if (result.newCount > 0) {
+                transactionsList = result.updatedTransactions;
+                localStorage.setItem('transactions', JSON.stringify(transactionsList));
+                localStorage.setItem('recurring_expenses', JSON.stringify(result.updatedRecurring));
+            }
+        }
+
         const sanitizedList = transactionsList.map((t: any) => ({
             ...t,
             date: t.date || new Date().toISOString(),
@@ -49,10 +81,10 @@ function Dashboard() {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [filterMonth, filterYear]); 
 
     const handleEditSalary = () => {
-        const newSalary = window.prompt("Digite seu salário mensal líquido:", config.salario.toString());
+        const newSalary = window.prompt("Digite seu salário mensal líquido (base):", config.salario.toString());
         if (newSalary && !isNaN(parseFloat(newSalary))) {
             const newConfig = { ...config, salario: parseFloat(newSalary) };
             setConfig(newConfig);
@@ -61,33 +93,46 @@ function Dashboard() {
     };
 
     const filteredTransactions = useMemo(() => {
-        const currentYear = new Date().getFullYear();
+        const yearToFilter = parseInt(filterYear);
         return transactions.filter(t => {
             const tDate = new Date(t.date!);
             const sameMonth = tDate.getMonth() === parseInt(filterMonth);
-            const sameYear = tDate.getFullYear() === currentYear;
+            const sameYear = tDate.getFullYear() === yearToFilter;
             const matchType = filterType === 'all' || t.type === filterType;
             return sameMonth && sameYear && matchType;
         });
-    }, [transactions, filterMonth, filterType]);
+    }, [transactions, filterMonth, filterType, filterYear]);
 
     useEffect(() => {
         const ctx = document.getElementById('myChart') as HTMLCanvasElement;
         if (ctx) {
             if (chartRef.current) chartRef.current.destroy();
-            const monthlyData = getMonthlyExpenses(transactions);
+            const monthlyData = getMonthlyExpenses(transactions, parseInt(filterYear));
+            
             const textColor = theme === 'dark' ? '#e2e8f0' : '#2c3e50';
             const gridColor = theme === 'dark' ? '#334155' : '#e1e4e8';
+
+            const backgroundColors = monthlyData.map((_, index) => {
+                return index === parseInt(filterMonth) 
+                    ? 'rgba(39, 174, 96, 0.8)'  
+                    : 'rgba(39, 174, 96, 0.2)'; 
+            });
+
+            const borderColors = monthlyData.map((_, index) => {
+                return index === parseInt(filterMonth)
+                    ? '#1e8449' 
+                    : '#27ae60'; 
+            });
 
             chartRef.current = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
                     datasets: [{
-                        label: 'Gastos do Ano (R$)',
+                        label: `Gastos de ${filterYear} (R$)`,
                         data: monthlyData,
-                        backgroundColor: 'rgba(39, 174, 96, 0.5)',
-                        borderColor: '#27ae60',
+                        backgroundColor: backgroundColors, 
+                        borderColor: borderColors,      
                         borderWidth: 1,
                         borderRadius: 4
                     }]
@@ -99,15 +144,22 @@ function Dashboard() {
                         y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: gridColor } },
                         x: { ticks: { color: textColor }, grid: { display: false } }
                     },
-                    plugins: { legend: { labels: { color: textColor } } }
+                    plugins: { legend: { labels: { color: textColor } } },
+                    onClick: (event, elements) => {
+                        if (elements && elements.length > 0) {
+                            const firstPoint = elements[0];
+                            const monthIndex = firstPoint.index;
+                            setFilterMonth(String(monthIndex));
+                        }
+                    }
                 }
             });
         }
         return () => { if (chartRef.current) chartRef.current.destroy(); };
-    }, [transactions, theme]);
+    }, [transactions, theme, filterYear, filterMonth]);
 
     const renderAnnualReport = () => {
-        const metrics = calculateAnnualMetrics(transactions, config.salario);
+        const metrics = calculateAnnualMetrics(transactions, config.salario, parseInt(filterYear));
         
         let statusColor = "var(--success)";
         let mensagem = "🚀 Finanças saudáveis! Mantenha o foco.";
@@ -123,10 +175,9 @@ function Dashboard() {
         return (
             <div className="annual-report-container">
                 <div className="report-header">
-                    <h4>Saúde Financeira (Projeção Anual)</h4>
-                    <button onClick={handleEditSalary} className="btn-small-outline">Alterar Salário</button>
+                    <h4>Saúde Financeira ({filterYear})</h4>
+                    <button onClick={handleEditSalary} className="btn-small-outline">Alterar Salário Base</button>
                 </div>
-
                 <div className="progress-area">
                     <div className="progress-labels">
                         <span>Comprometimento da Renda</span>
@@ -135,10 +186,7 @@ function Dashboard() {
                     <div className="progress-bar-bg">
                         <div 
                             className="progress-bar-fill" 
-                            style={{ 
-                                width: `${metrics.percentualComprometido}%`, 
-                                backgroundColor: statusColor 
-                            }}
+                            style={{ width: `${metrics.percentualComprometido}%`, backgroundColor: statusColor }}
                         ></div>
                     </div>
                 </div>
@@ -167,9 +215,9 @@ function Dashboard() {
         );
     };
 
-    const handleEdit = (transaction: Transaction) => { setEditingTransaction(transaction); setIsModalOpen(true); };
-    const handleDelete = (id: number) => {
-        if (window.confirm("Tem certeza que deseja excluir?")) {
+    const handleEdit = (t: Transaction) => { setEditingTransaction(t); setIsModalOpen(true); };
+    const handleDelete = (id: number) => { 
+        if(window.confirm("Excluir transação?")) {
             const updated = transactions.filter(t => t.id !== id);
             setTransactions(updated);
             localStorage.setItem('transactions', JSON.stringify(updated));
@@ -201,9 +249,25 @@ function Dashboard() {
             <section className="header-section">
                 <div className="header-top-row">
                     <h3>Visão Geral</h3>
-                    <button onClick={toggleTheme} className="theme-toggle-btn" title="Mudar Tema">{theme === 'light' ? '🌙' : '☀️'}</button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button 
+                            onClick={() => setIsRecurringModalOpen(true)} 
+                            className="theme-toggle-btn" 
+                            style={{ fontSize: '1rem', width: 'auto' }}
+                            title="Gerenciar Contas Fixas"
+                        >
+                            📅 Contas Fixas
+                        </button>
+                        <button onClick={toggleTheme} className="theme-toggle-btn" title="Mudar Tema">{theme === 'light' ? '🌙' : '☀️'}</button>
+                    </div>
                 </div>
                 <div className="filters">
+                    <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} style={{ fontWeight: 'bold' }}>
+                        {availableYears.map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+
                     <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
                         {['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].map((m, i) => (
                             <option key={i} value={i}>{m}</option>
@@ -228,7 +292,10 @@ function Dashboard() {
                     {filteredTransactions.slice().reverse().map(t => (
                         <li key={t.id} className={t.type}>
                             <div className="trans-info">
-                                <span className="trans-desc">{t.description}</span>
+                                <span className="trans-desc">
+                                    {t.isRecurring && "🔄 "} 
+                                    {t.description}
+                                </span>
                                 <span className="trans-cat">{t.category}</span>
                             </div>
                             <div className="trans-right">
@@ -238,7 +305,7 @@ function Dashboard() {
                             </div>
                         </li>
                     ))}
-                    {filteredTransactions.length === 0 && <li className="empty-state">Nenhuma transação neste período.</li>}
+                    {filteredTransactions.length === 0 && <li className="empty-state">Nenhuma transação encontrada em {filterYear}.</li>}
                 </ul>
             </section>
 
@@ -256,6 +323,15 @@ function Dashboard() {
                     onClose={handleCloseModal} 
                     onTransactionAdded={loadData}
                     transactionToEdit={editingTransaction}
+                    initialYear={parseInt(filterYear)}
+                    initialMonth={parseInt(filterMonth)}
+                />
+            )}
+
+            {isRecurringModalOpen && (
+                <RecurringExpenses
+                    onClose={() => setIsRecurringModalOpen(false)}
+                    onUpdate={loadData}
                 />
             )}
         </main>
