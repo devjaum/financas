@@ -89,7 +89,7 @@ export const calculateAnnualMetrics = (transactions: Transaction[], salarioConfi
         })
         .reduce((acc, t) => acc + t.amount, 0);
 
-    const mediaMensalEntradas = entradasDoAno / mesesConsiderados;
+    const mediaMensalEntradas = (entradasDoAno + (salarioConfigurado * mesesConsiderados)) / mesesConsiderados;
     
     const rendaAnualEstimada = entradasDoAno > 0 
         ? mediaMensalEntradas * 12 
