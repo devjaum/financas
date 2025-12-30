@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/components/RecurringExpenses.css';
+import '../styles/components/AddTransaciton.css';
 import { RecurringExpense, CATEGORIES, formatCurrency, Transaction } from '../utils/finance.ts';
 
 interface RecurringExpensesProps {
@@ -14,6 +15,7 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
     const [amount, setAmount] = useState('');
     const [day, setDay] = useState('5');
     const [category, setCategory] = useState('Contas Fixas');
+    const [type, setType] = useState<'credit' | 'debit'>('debit');
 
     useEffect(() => {
         const saved = localStorage.getItem('recurring_expenses');
@@ -30,7 +32,8 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
             amount: valorNumerico,
             category,
             day: parseInt(day),
-            lastGenerated: undefined
+            lastGenerated: undefined,
+            type: type
         };
 
         const updatedList = [...expenses, newExpense];
@@ -44,9 +47,9 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
 
     const handleDelete = (id: number) => {
         const confirmDelete = window.confirm(
-            "Você deseja excluir apenas a regra de recorrência futura ou também TODAS as transações já geradas por ela?\n\n" +
+            "Você deseja excluir apenas a regra futura ou também TODAS as transações já geradas?\n\n" +
             "• Clique em 'OK' para excluir TUDO (Regra + Histórico).\n" +
-            "• Clique em 'Cancelar' para cancelar a operação."
+            "• Clique em 'Cancelar' para cancelar."
         );
 
         if (confirmDelete) {
@@ -69,12 +72,12 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
         <div className="recurring-modal-overlay">
             <div className="recurring-modal-content">
                 <div className="recurring-modal-header">
-                    <h2>Gerenciar Contas Fixas</h2>
+                    <h2>Gerenciar Recorrências</h2>
                     <button onClick={onClose} className="close-btn" style={{ fontSize: '1.5rem', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>✖</button>
                 </div>
 
                 <div className="recurring-list-container">
-                    {expenses.length === 0 && <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>Nenhuma conta fixa cadastrada.</p>}
+                    {expenses.length === 0 && <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>Nenhuma recorrência cadastrada.</p>}
                     <ul>
                         {expenses.map(e => (
                             <li key={e.id} className="recurring-list-item">
@@ -85,11 +88,16 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
                                     </div>
                                 </div>
                                 <div className="recurring-item-actions">
-                                    <span className="recurring-item-amount">{formatCurrency(e.amount)}</span>
+                                    <span 
+                                        className="recurring-item-amount"
+                                        style={{ color: e.type === 'credit' ? 'var(--success)' : 'var(--danger)' }}
+                                    >
+                                        {formatCurrency(e.amount)}
+                                    </span>
                                     <button 
                                         onClick={() => handleDelete(e.id)} 
                                         className="btn-recurring-delete"
-                                        title="Excluir regra e histórico vinculado"
+                                        title="Excluir"
                                     >
                                         🗑️
                                     </button>
@@ -100,12 +108,29 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
                 </div>
 
                 <div className="recurring-form-section">
-                    <h3 className="recurring-form-title">Adicionar Nova Recorrência</h3>
+                    <h3 className="recurring-form-title">Adicionar Nova</h3>
                     
+                    <div className="transaction-type-selector" style={{ marginBottom: '1rem' }}>
+                        <button 
+                            type="button" 
+                            className={type === 'credit' ? 'active credit' : ''} 
+                            onClick={() => setType('credit')}
+                        >
+                            ⬆ Entrada (Salário)
+                        </button>
+                        <button 
+                            type="button" 
+                            className={type === 'debit' ? 'active debit' : ''} 
+                            onClick={() => setType('debit')}
+                        >
+                            ⬇ Saída (Conta)
+                        </button>
+                    </div>
+
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Descrição</label>
                     <input 
                         type="text" 
-                        placeholder="Ex: Internet, Luz" 
+                        placeholder={type === 'credit' ? "Ex: Salário, Aluguel Recebido" : "Ex: Internet, Luz"} 
                         value={description} 
                         onChange={e => setDescription(e.target.value)} 
                     />
@@ -121,7 +146,7 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Dia Venc.</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Dia (Todo mês)</label>
                             <input 
                                 type="number" 
                                 min="1" 
@@ -137,8 +162,14 @@ function RecurringExpenses({ onClose, onUpdate }: RecurringExpensesProps) {
                         {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </select>
 
-                    <button onClick={handleSave} className="recurring-submit-btn">
-                        + Adicionar Recorrência
+                    <button 
+                        onClick={handleSave} 
+                        className="recurring-submit-btn"
+                        style={{ 
+                            backgroundColor: type === 'credit' ? 'var(--success)' : 'var(--text-secondary)' 
+                        }}
+                    >
+                        {type === 'credit' ? '+ Adicionar Entrada Fixa' : '+ Adicionar Conta Fixa'}
                     </button>
                 </div>
             </div>

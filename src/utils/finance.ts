@@ -16,6 +16,7 @@ export interface RecurringExpense {
     category: string;
     day: number;
     lastGenerated?: string;
+    type?: 'credit' | 'debit';
 }
 
 export interface FinanceConfig {
@@ -35,21 +36,26 @@ export const formatCurrency = (value: number) => {
 };
 
 export const getMonthlyExpenses = (transactions: Transaction[], selectedYear: number) => {
-    const expenses = new Array(12).fill(0);
+    const expense = new Array(12).fill(0);
+    const income = new Array(12).fill(0);
 
     transactions.forEach(t => {
-        if (!t.date || t.type !== 'debit') return;
+        if (!t.date) return;
         
         const tDate = new Date(t.date);
         const year = tDate.getFullYear();
         const month = tDate.getMonth();
         
         if (year === selectedYear) {
-            expenses[month] += Math.abs(t.amount);
+            if (t.type === 'debit') {
+                expense[month] += Math.abs(t.amount);
+            } else if (t.type === 'credit') {
+                income[month] += t.amount;
+            }
         }
     });
 
-    return expenses;
+    return { income, expense };
 };
 
 export const calculateAnnualMetrics = (transactions: Transaction[], salarioConfigurado: number, selectedYear: number) => {
@@ -113,15 +119,15 @@ export const processRecurringExpenses = (
     
     const now = new Date();
     const currentRealYear = now.getFullYear();
-    
     const limitYear = Math.max(currentRealYear, filterYear);
-    
     const cutoffDate = new Date(limitYear, 11, 28, 23, 59, 59);
 
     let newTransactions: Transaction[] = [];
     let updatedRecurring = [...recurringExpenses];
     
     updatedRecurring = updatedRecurring.map(expense => {
+        const expenseType = expense.type || 'debit';
+        
         let startMonth: number;
         let startYear: number;
 
@@ -149,12 +155,13 @@ export const processRecurringExpenses = (
              const y = pointerDate.getFullYear();
              
              const transactionDate = new Date(y, m, expense.day, 12, 0, 0);
-             
+             const amountVal = Math.abs(expense.amount);
+
              newTransactions.push({
                 id: Date.now() + Math.random(),
                 description: expense.description,
-                amount: -Math.abs(expense.amount),
-                type: 'debit',
+                amount: expenseType === 'credit' ? amountVal : -amountVal,
+                type: expenseType,
                 category: expense.category,
                 date: transactionDate.toISOString(),
                 isRecurring: true,

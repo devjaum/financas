@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import '../styles/components/Dashboard.css';
 import AddTransaction from './AddTransaction.tsx';
 import RecurringExpenses from './RecurringExpenses.tsx'; 
@@ -43,7 +43,7 @@ function Dashboard() {
         return Array.from(years).sort((a, b) => a - b);
     }, [transactions, currentYearNum]);
 
-    const loadData = () => {
+    const loadData = useCallback(() => {
         const savedTransactions = localStorage.getItem('transactions');
         let transactionsList: Transaction[] = savedTransactions ? JSON.parse(savedTransactions) : [];
         
@@ -54,7 +54,7 @@ function Dashboard() {
         if (savedRecurring) {
             const recurringList: RecurringExpense[] = JSON.parse(savedRecurring);
             const selectedMonthIndex = parseInt(filterMonth);
-            const selectedYearInt = parseInt(filterYear)
+            const selectedYearInt = parseInt(filterYear); 
             
             const result = processRecurringExpenses(
                 transactionsList, 
@@ -77,11 +77,11 @@ function Dashboard() {
         }));
 
         setTransactions(sanitizedList);
-    };
+    }, [filterMonth, filterYear]); 
 
     useEffect(() => {
         loadData();
-    }, [filterMonth, filterYear]); 
+    }, [loadData]); 
 
     const handleEditSalary = () => {
         const newSalary = window.prompt("Digite seu salário mensal líquido (base):", config.salario.toString());
@@ -107,35 +107,40 @@ function Dashboard() {
         const ctx = document.getElementById('myChart') as HTMLCanvasElement;
         if (ctx) {
             if (chartRef.current) chartRef.current.destroy();
-            const monthlyData = getMonthlyExpenses(transactions, parseInt(filterYear));
+            
+            const { income, expense } = getMonthlyExpenses(transactions, parseInt(filterYear));
             
             const textColor = theme === 'dark' ? '#e2e8f0' : '#2c3e50';
             const gridColor = theme === 'dark' ? '#334155' : '#e1e4e8';
 
-            const backgroundColors = monthlyData.map((_, index) => {
-                return index === parseInt(filterMonth) 
-                    ? 'rgba(39, 174, 96, 0.8)'  
-                    : 'rgba(39, 174, 96, 0.2)'; 
-            });
-
-            const borderColors = monthlyData.map((_, index) => {
-                return index === parseInt(filterMonth)
-                    ? '#1e8449' 
-                    : '#27ae60'; 
-            });
+            const createColors = (baseColor: string, highlightColor: string) => {
+                return income.map((_, index) => {
+                    return index === parseInt(filterMonth) ? highlightColor : baseColor;
+                });
+            };
 
             chartRef.current = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                    datasets: [{
-                        label: `Gastos de ${filterYear} (R$)`,
-                        data: monthlyData,
-                        backgroundColor: backgroundColors, 
-                        borderColor: borderColors,      
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
+                    datasets: [
+                        {
+                            label: `Entradas`,
+                            data: income,
+                            backgroundColor: createColors('rgba(39, 174, 96, 0.2)', 'rgba(39, 174, 96, 0.8)'),
+                            borderColor: '#27ae60',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: `Saídas`,
+                            data: expense,
+                            backgroundColor: createColors('rgba(192, 57, 43, 0.2)', 'rgba(192, 57, 43, 0.8)'),
+                            borderColor: '#c0392b',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
@@ -156,7 +161,7 @@ function Dashboard() {
             });
         }
         return () => { if (chartRef.current) chartRef.current.destroy(); };
-    }, [transactions, theme, filterYear, filterMonth]);
+    }, [transactions, theme, filterYear, filterMonth]); 
 
     const renderAnnualReport = () => {
         const metrics = calculateAnnualMetrics(transactions, config.salario, parseInt(filterYear));
@@ -178,6 +183,7 @@ function Dashboard() {
                     <h4>Saúde Financeira ({filterYear})</h4>
                     <button onClick={handleEditSalary} className="btn-small-outline">Alterar Salário Base</button>
                 </div>
+                
                 <div className="progress-area">
                     <div className="progress-labels">
                         <span>Comprometimento da Renda</span>
@@ -254,9 +260,9 @@ function Dashboard() {
                             onClick={() => setIsRecurringModalOpen(true)} 
                             className="theme-toggle-btn" 
                             style={{ fontSize: '1rem', width: 'auto' }}
-                            title="Gerenciar Contas Fixas"
+                            title="Gerenciar Contas Fixas e Salários"
                         >
-                            📅 Contas Fixas
+                            📅 Agendamentos / Fixas
                         </button>
                         <button onClick={toggleTheme} className="theme-toggle-btn" title="Mudar Tema">{theme === 'light' ? '🌙' : '☀️'}</button>
                     </div>
@@ -310,7 +316,7 @@ function Dashboard() {
             </section>
 
             <section>
-                <h3>Gráfico Anual de Gastos</h3>
+                <h3>Gráfico Anual</h3>
                 <div className="chart-container"><canvas id="myChart"></canvas></div>
             </section>
 
