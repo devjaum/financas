@@ -146,6 +146,23 @@ ul.transaction-list li:last-child {
 li.credit .trans-right span { color: var(--success); }
 li.debit .trans-right span { color: var(--danger); }
 
+.trans-info{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 200px;
+}
+.trans-cat{
+  width: 80px;
+  text-align: center;
+}
+.trans-right{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
 .btn-icon {
   background: transparent;
   border: none;
